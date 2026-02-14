@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TI-84 Plus CE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+  }
+
+  .calculator-body {
+    width: 420px;
+    background: linear-gradient(145deg, #2a2a3a, #1e1e2e);
+    border-radius: 28px;
+    padding: 18px 14px 14px;
+    box-shadow:
+      0 30px 60px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(255,255,255,0.05),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    position: relative;
+    user-select: none;
+  }
+
+  .brand-label {
+    text-align: center;
+    color: #888;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .brand-label span { color: #5bc0eb; font-weight: 700; }
+
+  /* SCREEN */
+  .screen-bezel {
+    background: #111118;
+    border-radius: 12px;
+    padding: 6px;
+    margin-bottom: 10px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+  }
+
+  .screen {
+    background: #0a1628;
+    border-radius: 8px;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #1a2a40;
+  }
+
+  /* Home screen */
+  .home-screen {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 8px 10px;
+    color: #c8e6ff;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .history-area {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .history-line {
+    text-align: right;
+    color: #6a8aaa;
+    font-size: 13px;
+    padding: 1px 0;
+    word-break: break-all;
+  }
+  .history-line.result {
+    color: #5bc0eb;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .input-line {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    border-top: 1px solid #1a2a40;
+    padding-top: 4px;
+    margin-top: 4px;
+  }
+
+  .input-text {
+    flex: 1;
+    color: #e8f4ff;
+    font-size: 16px;
+    word-break: break-all;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px; height: 18px;
+    background: #5bc0eb;
+    animation: blink 0.8s infinite;
+    vertical-align: middle;
+    margin-left: 1px;
+  }
+
+  @keyframes blink {
+    0%,49% { opacity: 1; }
+    50%,100% { opacity: 0; }
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 6px;
+    font-size: 9px;
+    color: #4a6a8a;
+    border-bottom: 1px solid #1a2a40;
+    margin-bottom: 4px;
+  }
+  .status-bar .mode-indicator { color: #5bc0eb; }
+  .status-bar .second-indicator { color: #f7b731; display: none; }
+  .status-bar .second-indicator.active { display: inline; }
+  .status-bar .alpha-indicator { color: #26de81; display: none; }
+  .status-bar .alpha-indicator.active { display: inline; }
+
+  /* Graph screen */
+  .graph-screen {
+    width: 100%; height: 100%;
+    display: none;
+    position: relative;
+    background: #0a1628;
+  }
+
+  .graph-screen canvas {
+    width: 100%; height: 100%;
+  }
+
+  .graph-input-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: rgba(10,22,40,0.92);
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #5bc0eb;
+    border-bottom: 1px solid #1a2a40;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .graph-input-bar input {
+    background: transparent;
+    border: none;
+    color: #e8f4ff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    flex: 1;
+    outline: none;
+  }
+
+  /* Y= editor screen */
+  .yedit-screen {
+    width: 100%; height: 100%;
+    display: none;
+    padding: 6px 10px;
+    color: #c8e6ff;
+    font-size: 13px;
+    overflow-y: auto;
+  }
+  .yedit-screen .eq-row {
+    display: flex;
+    align-items: center;
+    padding: 3px 0;
+    border-bottom: 1px solid #1a2a40;
+    cursor: pointer;
+  }
+  .yedit-screen .eq-row:hover { background: rgba(91,192,235,0.08); }
+  .yedit-screen .eq-label {
+    color: #5bc0eb;
+    width: 36px;
+    flex-shrink: 0;
+    font-weight: bold;
+  }
+  .yedit-screen .eq-value {
+    flex: 1;
+    color: #e8f4ff;
+  }
+  .yedit-screen .eq-color {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Table screen */
+  .table-screen {
+    width: 100%; height: 100%;
+    display: none;
+    overflow-y: auto;
+    font-size: 12px;
+    color: #c8e6ff;
+  }
+  .table-screen table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .table-screen th {
+    background: #1a2a40;
+    color: #5bc0eb;
+    padding: 4px 6px;
+    position: sticky;
+    top: 0;
+    font-weight: bold;
+  }
+  .table-screen td {
+    padding: 3px 6px;
+    border-bottom: 1px solid #0d1f33;
+    text-align: right;
+  }
+
+  /* MODIFIER ROW */
+  .modifier-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+    padding: 0 2px;
+  }
+  .modifier-row button {
+    flex: 1;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .modifier-row button:active { transform: scale(0.95); }
+
+  #btn-y-eq { background: #3a3a5a; color: #5bc0eb; }
+  #btn-window { background: #3a3a5a; color: #5bc0eb; }
+  #btn-zoom { background: #3a3a5a; color: #5bc0eb; }
+  #btn-trace { background: #3a3a5a; color: #5bc0eb; }
+  #btn-graph { background: #3a3a5a; color: #5bc0eb; }
+
+  /* FUNCTION KEYS ROW */
+  .func-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+    padding: 0 2px;
+  }
+  .func-row button {
+    flex: 1;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.1s;
+    position: relative;
+  }
+  .func-row button:active { transform: scale(0.95); }
+
+  /* SECOND / ALPHA labels */
+  .key-label-2nd {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7px;
+    color: #f7b731;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .key-label-alpha {
+    position: absolute;
+    top: -11px;
+    right: 2px;
+    font-size: 7px;
+    color: #26de81;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* BUTTON GRID */
+  .key-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    padding: 0 2px;
+  }
+
+  .key-grid button {
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.1s;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .key-grid button:active {
+    transform: scale(0.94);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* Color classes */
+  .k-dark { background: #3a3a5a; color: #ddd; }
+  .k-dark:hover { background: #4a4a6a; }
+  .k-blue { background: #2563eb; color: #fff; }
+  .k-blue:hover { background: #3b7cf5; }
+  .k-light { background: #555570; color: #fff; }
+  .k-light:hover { background: #65658a; }
+  .k-num { background: #444460; color: #fff; }
+  .k-num:hover { background: #555580; }
+  .k-op { background: #555570; color: #fff; }
+  .k-op:hover { background: #66668a; }
+  .k-enter { background: #1a8a4a; color: #fff; grid-row: span 2; height: auto; }
+  .k-enter:hover { background: #22a85a; }
+  .k-second { background: #f7b731; color: #1a1a2e; font-weight: bold; }
+  .k-second:hover { background: #f9c84d; }
+  .k-second.active { background: #ff6b35; }
+  .k-alpha { background: #26de81; color: #1a1a2e; font-weight: bold; }
+  .k-alpha:hover { background: #3ef09a; }
+  .k-alpha.active { background: #ff6b35; }
+  .k-arrow { background: #333350; color: #aaa; font-size: 16px; }
+  .k-arrow:hover { background: #444468; }
+  .k-clear { background: #c0392b; color: #fff; }
+  .k-clear:hover { background: #e04438; }
+  .k-del { background: #8e44ad; color: #fff; }
+  .k-del:hover { background: #a35bc4; }
+  .k-neg { background: #444460; color: #fff; font-size: 11px; }
+
+  .bottom-label {
+    text-align: center;
+    color: #555;
+    font-size: 8px;
+    margin-top: 8px;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 2px;
+  }
+
+  /* Modal for Y= editing */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: #1e1e2e;
+    border-radius: 16px;
+    padding: 24px;
+    width: 340px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    border: 1px solid #333;
+  }
+  .modal-box h3 {
+    color: #5bc0eb;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .modal-box input {
+    width: 100%;
+    background: #0a1628;
+    border: 1px solid #2a4060;
+    border-radius: 8px;
+    padding: 10px;
+    color: #e8f4ff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .modal-box input:focus { border-color: #5bc0eb; }
+  .modal-btns {
+    display: flex; gap: 8px; justify-content: flex-end;
+  }
+  .modal-btns button {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .modal-btns .btn-cancel { background: #3a3a5a; color: #aaa; }
+  .modal-btns .btn-ok { background: #2563eb; color: #fff; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2a4060; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="calculator-body">
+  <div class="brand-label"><span>TI-84</span> Plus CE</div>
+
+  <div class="screen-bezel">
+    <div class="screen">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <div>
+          <span class="second-indicator" id="secondInd">2ND</span>
+          <span class="alpha-indicator" id="alphaInd">ALPHA</span>
+        </div>
+        <span class="mode-indicator" id="modeInd">RAD</span>
+      </div>
+
+      <!-- Home Screen -->
+      <div class="home-screen" id="homeScreen">
+        <div class="history-area" id="historyArea"></div>
+        <div class="input-line">
+          <span class="input-text" id="inputText"></span><span class="cursor"></span>
+        </div>
+      </div>
+
+      <!-- Graph Screen -->
+      <div class="graph-screen" id="graphScreen">
+        <canvas id="graphCanvas"></canvas>
+        <div class="graph-input-bar" id="graphBar" style="display:none;">
+          <span>Trace: X=</span>
+          <span id="traceX">0</span>
+          <span> Y=</span>
+          <span id="traceY">0</span>
+        </div>
+      </div>
+
+      <!-- Y= Editor -->
+      <div class="yedit-screen" id="yeditScreen"></div>
+
+      <!-- Table Screen -->
+      <div class="table-screen" id="tableScreen"></div>
+    </div>
+  </div>
+
+  <!-- Top row: Y=, WINDOW, ZOOM, TRACE, GRAPH -->
+  <div class="modifier-row">
+    <button id="btn-y-eq" onclick="showYEdit()">Y=</button>
+    <button id="btn-window" onclick="showWindow()">WIN</button>
+    <button id="btn-zoom" onclick="zoomStd()">ZOOM</button>
+    <button id="btn-trace" onclick="toggleTrace()">TRACE</button>
+    <button id="btn-graph" onclick="showGraph()">GRAPH</button>
+  </div>
+
+  <!-- 2nd, MODE, DEL row -->
+  <div class="func-row">
+    <button class="k-second" id="btn2nd" onclick="toggle2nd()">2nd</button>
+    <button class="k-dark" onclick="handleMode()">MODE</button>
+    <button class="k-del" onclick="handleDel()">DEL</button>
+    <button class="k-alpha" id="btnAlpha" onclick="toggleAlpha()">ALPHA</button>
+    <button class="k-dark" onclick="handleKey('stat')">
+      STAT
+      <span class="key-label-2nd">LIST</span>
+    </button>
+  </div>
+
+  <!-- Main key grid -->
+  <div class="key-grid" id="keyGrid">
+    <!-- Row: MATH, APPS, PRGM, VARS, CLEAR -->
+    <button class="k-dark" onclick="handleKey('math')">MATH</button>
+    <button class="k-dark" onclick="handleKey('apps')">APPS</button>
+    <button class="k-dark" onclick="handleKey('prgm')">PRGM</button>
+    <button class="k-dark" onclick="handleKey('vars')">VARS</button>
+    <button class="k-clear" onclick="handleClear()">CLEAR</button>
+
+    <!-- Row: x⁻¹, sin, cos, tan, ^ -->
+    <button class="k-light" onclick="handleFunc('x⁻¹')">x⁻¹<span class="key-label-2nd">MATRX</span></button>
+    <button class="k-light" onclick="handleFunc('sin')">sin<span class="key-label-2nd">sin⁻¹</span></button>
+    <button class="k-light" onclick="handleFunc('cos')">cos<span class="key-label-2nd">cos⁻¹</span></button>
+    <button class="k-light" onclick="handleFunc('tan')">tan<span class="key-label-2nd">tan⁻¹</span></button>
+    <button class="k-light" onclick="handleFunc('^')">^<span class="key-label-2nd">π</span></button>
+
+    <!-- Row: x², ,, (, ), / -->
+    <button class="k-light" onclick="handleFunc('x²')">x²<span class="key-label-2nd">√</span></button>
+    <button class="k-op" onclick="handleKey(',')">,</button>
+    <button class="k-op" onclick="handleKey('(')">(</button>
+    <button class="k-op" onclick="handleKey(')')">)</button>
+    <button class="k-op" onclick="handleKey('÷')">÷</button>
+
+    <!-- Row: LOG, 7, 8, 9, × -->
+    <button class="k-light" onclick="handleFunc('log')">log<span class="key-label-2nd">10ˣ</span></button>
+    <button class="k-num" onclick="handleKey('7')">7</button>
+    <button class="k-num" onclick="handleKey('8')">8</button>
+    <button class="k-num" onclick="handleKey('9')">9</button>
+    <button class="k-op" onclick="handleKey('×')">×</button>
+
+    <!-- Row: LN, 4, 5, 6, - -->
+    <button class="k-light" onclick="handleFunc('ln')">ln<span class="key-label-2nd">eˣ</span></button>
+    <button class="k-num" onclick="handleKey('4')">4</button>
+    <button class="k-num" onclick="handleKey('5')">5</button>
+    <button class="k-num" onclick="handleKey('6')">6</button>
+    <button class="k-op" onclick="handleKey('-')">−</button>
+
+    <!-- Row: STO→, 1, 2, 3, + -->
+    <button class="k-dark" onclick="handleKey('sto')">STO→<span class="key-label-2nd">RCL</span></button>
+    <button class="k-num" onclick="handleKey('1')">1</button>
+    <button class="k-num" onclick="handleKey('2')">2</button>
+    <button class="k-num" onclick="handleKey('3')">3</button>
+    <button class="k-op" onclick="handleKey('+')">+</button>
+
+    <!-- Row: ON, 0, ., (-), ENTER -->
+    <button class="k-dark" onclick="showHome()">ON</button>
+    <button class="k-num" onclick="handleKey('0')">0</button>
+    <button class="k-num" onclick="handleKey('.')">.</button>
+    <button class="k-neg" onclick="handleKey('neg')">(-)</button>
+    <button class="k-enter" onclick="handleEnter()">ENTER</button>
+
+    <!-- Arrow keys row -->
+    <button class="k-arrow" onclick="handleArrow('up')">▲</button>
+    <button class="k-arrow" onclick="handleArrow('down')">▼</button>
+    <button class="k-arrow" onclick="handleArrow('left')">◄</button>
+    <button class="k-arrow" onclick="handleArrow('right')">►</button>
+    <button class="k-dark" onclick="handleKey('table')">TABLE</button>
+  </div>
+
+  <div class="bottom-label">GRAPHING CALCULATOR</div>
+</div>
+
+<!-- Y= Edit Modal -->
+<div class="modal-overlay" id="eqModal">
+  <div class="modal-box">
+    <h3 id="eqModalTitle">Edit Y1</h3>
+    <input id="eqModalInput" placeholder="e.g. x^2+3*x-1" autocomplete="off" />
+    <div style="color:#6a8aaa; font-size:10px; margin-bottom:12px;">
+      Use x as variable. Supported: +, -, *, /, ^, sin(), cos(), tan(), log(), ln(), sqrt(), abs(), pi, e
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeEqModal()">Cancel</button>
+      <button class="btn-ok" onclick="saveEq()">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let input = '';
+let history = [];
+let secondMode = false;
+let alphaMode = false;
+let degreeMode = false; // false = RAD, true = DEG
+let currentScreen = 'home'; // home, graph, yedit, table
+let ans = 0;
+let variables = {};
+for (let c = 65; c <= 90; c++) variables[String.fromCharCode(c)] = 0;
+variables['θ'] = 0;
+
+// Graph equations (Y1..Y7)
+const eqColors = ['#5bc0eb','#f7b731','#fc5c65','#26de81','#a55eea','#fd9644','#4bcffa'];
+let equations = ['','','','','','',''];
+let graphWindow = { xmin: -10, xmax: 10, ymin: -10, ymax: 10 };
+let tracing = false;
+let traceX = 0;
+let traceEqIdx = 0;
+
+// ===== DOM REFS =====
+const inputText = document.getElementById('inputText');
+const historyArea = document.getElementById('historyArea');
+const homeScreen = document.getElementById('homeScreen');
+const graphScreen = document.getElementById('graphScreen');
+const yeditScreen = document.getElementById('yeditScreen');
+const tableScreen = document.getElementById('tableScreen');
+const modeInd = document.getElementById('modeInd');
+const secondInd = document.getElementById('secondInd');
+const alphaInd = document.getElementById('alphaInd');
+const graphCanvas = document.getElementById('graphCanvas');
+const graphBar = document.getElementById('graphBar');
+const ctx = graphCanvas.getContext('2d');
+
+// ===== DISPLAY UPDATE =====
+function updateDisplay() {
+  inputText.textContent = input;
+  modeInd.textContent = degreeMode ? 'DEG' : 'RAD';
+  secondInd.className = 'second-indicator' + (secondMode ? ' active' : '');
+  alphaInd.className = 'alpha-indicator' + (alphaMode ? ' active' : '');
+  document.getElementById('btn2nd').className = 'k-second' + (secondMode ? ' active' : '');
+  document.getElementById('btnAlpha').className = 'k-alpha' + (alphaMode ? ' active' : '');
+}
+
+function addHistory(expr, result) {
+  const div1 = document.createElement('div');
+  div1.className = 'history-line';
+  div1.textContent = expr;
+  const div2 = document.createElement('div');
+  div2.className = 'history-line result';
+  div2.textContent = result;
+  historyArea.appendChild(div1);
+  historyArea.appendChild(div2);
+  historyArea.scrollTop = historyArea.scrollHeight;
+}
+
+// ===== SCREEN SWITCHING =====
+function switchScreen(name) {
+  currentScreen = name;
+  homeScreen.style.display = name === 'home' ? 'flex' : 'none';
+  graphScreen.style.display = name === 'graph' ? 'block' : 'none';
+  yeditScreen.style.display = name === 'yedit' ? 'block' : 'none';
+  tableScreen.style.display = name === 'table' ? 'block' : 'none';
+}
+
+function showHome() { switchScreen('home'); updateDisplay(); }
+
+// ===== KEY HANDLING =====
+function handleKey(k) {
+  if (currentScreen !== 'home') showHome();
+
+  if (k === 'neg') {
+    input += '(-';
+  } else if (k === 'sto') {
+    if (secondMode) {
+      // RCL — prompt variable
+      secondMode = false;
+      input += 'Ans';
+    } else {
+      input += '→';
+    }
+  } else if (k === 'table') {
+    showTable();
+    return;
+  } else if (k === 'stat' || k === 'math' || k === 'apps' || k === 'prgm' || k === 'vars') {
+    handleMenuKey(k);
+    return;
+  } else {
+    input += k;
+  }
+  resetModifiers();
+  updateDisplay();
+}
+
+function handleFunc(fn) {
+  if (currentScreen !== 'home') showHome();
+
+  if (secondMode) {
+    const secondMap = {
+      'sin': 'sin⁻¹(', 'cos': 'cos⁻¹(', 'tan': 'tan⁻¹(',
+      '^': 'π', 'x²': '√(', 'log': '10^(', 'ln': 'e^(',
+      'x⁻¹': 'MATRX'
+    };
+    if (secondMap[fn]) {
+      if (secondMap[fn] === 'MATRX') {
+        // placeholder
+      } else {
+        input += secondMap[fn];
+      }
+    }
+  } else {
+    const fnMap = {
+      'sin': 'sin(', 'cos': 'cos(', 'tan': 'tan(',
+      'log': 'log(', 'ln': 'ln(', 'x²': '²',
+      'x⁻¹': '⁻¹', '^': '^'
+    };
+    input += fnMap[fn] || fn;
+  }
+  resetModifiers();
+  updateDisplay();
+}
+
+function handleMenuKey(k) {
+  // Simple math menu insert shortcuts
+  if (k === 'math') {
+    input += ''; // Could show a menu; for now just a placeholder
+  }
+  resetModifiers();
+  updateDisplay();
+}
+
+function handleDel() {
+  if (input.length > 0) {
+    // Remove multi-char tokens
+    const tokens = ['sin⁻¹(','cos⁻¹(','tan⁻¹(','sin(','cos(','tan(','log(','ln(','√(','10^(','e^(','(-'];
+    for (const t of tokens) {
+      if (input.endsWith(t)) {
+        input = input.slice(0, -t.length);
+        updateDisplay();
+        return;
+      }
+    }
+    input = input.slice(0, -1);
+  }
+  updateDisplay();
+}
+
+function handleClear() {
+  if (input === '' && currentScreen === 'home') {
+    historyArea.innerHTML = '';
+  }
+  input = '';
+  updateDisplay();
+}
+
+function handleMode() {
+  degreeMode = !degreeMode;
+  updateDisplay();
+}
+
+function toggle2nd() {
+  secondMode = !secondMode;
+  alphaMode = false;
+  updateDisplay();
+}
+
+function toggleAlpha() {
+  alphaMode = !alphaMode;
+  secondMode = false;
+  updateDisplay();
+}
+
+function resetModifiers() {
+  secondMode = false;
+  alphaMode = false;
+}
+
+function handleArrow(dir) {
+  if (currentScreen === 'graph' && tracing) {
+    const step = (graphWindow.xmax - graphWindow.xmin) / 200;
+    if (dir === 'left') traceX -= step;
+    if (dir === 'right') traceX += step;
+    if (dir === 'up') {
+      traceEqIdx = (traceEqIdx - 1 + equations.length) % equations.length;
+      while (traceEqIdx > 0 && !equations[traceEqIdx]) traceEqIdx = (traceEqIdx - 1 + equations.length) % equations.length;
+    }
+    if (dir === 'down') {
+      traceEqIdx = (traceEqIdx + 1) % equations.length;
+      while (traceEqIdx > 0 && !equations[traceEqIdx]) traceEqIdx = (traceEqIdx + 1) % equations.length;
+    }
+    drawGraph();
+  }
+}
+
+// ===== EXPRESSION EVALUATION =====
+function preprocessExpr(expr) {
+  let e = expr;
+  // Replace display symbols
+  e = e.replace(/Ans/g, `(${ans})`);
+  e = e.replace(/π/g, `(${Math.PI})`);
+  e = e.replace(/→([A-Zθ])/g, (_, v) => `__STO__${v}`);
+  e = e.replace(/²/g, '^2');
+  e = e.replace(/⁻¹/g, '^(-1)');
+  e = e.replace(/÷/g, '/');
+  e = e.replace(/×/g, '*');
+  e = e.replace(/−/g, '-');
+  // Functions
+  e = e.replace(/sin⁻¹\(/g, 'asin(');
+  e = e.replace(/cos⁻¹\(/g, 'acos(');
+  e = e.replace(/tan⁻¹\(/g, 'atan(');
+  e = e.replace(/√\(/g, 'sqrt(');
+  e = e.replace(/10\^\(/g, 'pow10(');
+  e = e.replace(/e\^\(/g, 'expe(');
+  // Implied multiplication: 2( -> 2*(, )(->)*(, 2sin->2*sin, etc.
+  e = e.replace(/(\d)(\()/g, '$1*$2');
+  e = e.replace(/(\))(\()/g, '$1*$2');
+  e = e.replace(/(\d)(sin|cos|tan|asin|acos|atan|log|ln|sqrt|pow10|expe)/g, '$1*$2');
+  e = e.replace(/(\))(sin|cos|tan|asin|acos|atan|log|ln|sqrt|pow10|expe)/g, '$1*$2');
+  // Replace variable letters
+  for (let c = 65; c <= 90; c++) {
+    const ch = String.fromCharCode(c);
+    const re = new RegExp(`(?<![a-zA-Z])${ch}(?![a-zA-Z])`, 'g');
+    e = e.replace(re, `(${variables[ch]})`);
+  }
+  return e;
+}
+
+function safeEval(expr) {
+  // Check for store
+  const stoMatch = expr.match(/__STO__([A-Zθ])/);
+  let storeVar = null;
+  if (stoMatch) {
+    storeVar = stoMatch[1];
+    expr = expr.replace(/__STO__[A-Zθ]/, '');
+  }
+
+  // Build safe evaluation
+  const toRad = degreeMode ? (v) => v * Math.PI / 180 : (v) => v;
+  const fromRad = degreeMode ? (v) => v * 180 / Math.PI : (v) => v;
+
+  let e = expr;
+  // Handle ^ as power
+  // We'll use a recursive-descent-style approach with Function()
+  e = e.replace(/\^/g, '**');
+
+  // Replace functions
+  e = e.replace(/sin\(/g, `__sin(`);
+  e = e.replace(/cos\(/g, `__cos(`);
+  e = e.replace(/tan\(/g, `__tan(`);
+  e = e.replace(/asin\(/g, `__asin(`);
+  e = e.replace(/acos\(/g, `__acos(`);
+  e = e.replace(/atan\(/g, `__atan(`);
+  e = e.replace(/log\(/g, `__log(`);
+  e = e.replace(/ln\(/g, `__ln(`);
+  e = e.replace(/sqrt\(/g, `__sqrt(`);
+  e = e.replace(/pow10\(/g, `__pow10(`);
+  e = e.replace(/expe\(/g, `__expe(`);
+  e = e.replace(/abs\(/g, `__abs(`);
+
+  // Validate - only allow safe chars
+  if (/[^0-9+\-*/().e,_ \t]/.test(e.replace(/__[a-z0-9]+/g, ''))) {
+    throw new Error('Syntax Error');
+  }
+
+  const fn = new Function(
+    '__sin','__cos','__tan','__asin','__acos','__atan','__log','__ln','__sqrt','__pow10','__expe','__abs',
+    `"use strict"; return (${e});`
+  );
+
+  const result = fn(
+    (v) => Math.sin(toRad(v)),
+    (v) => Math.cos(toRad(v)),
+    (v) => Math.tan(toRad(v)),
+    (v) => fromRad(Math.asin(v)),
+    (v) => fromRad(Math.acos(v)),
+    (v) => fromRad(Math.atan(v)),
+    (v) => Math.log10(v),
+    (v) => Math.log(v),
+    (v) => Math.sqrt(v),
+    (v) => Math.pow(10, v),
+    (v) => Math.exp(v),
+    (v) => Math.abs(v)
+  );
+
+  if (storeVar) {
+    variables[storeVar] = result;
+  }
+
+  return result;
+}
+
+function formatResult(n) {
+  if (typeof n !== 'number' || isNaN(n)) return 'Error';
+  if (!isFinite(n)) return n > 0 ? '∞' : '-∞';
+  if (Number.isInteger(n) && Math.abs(n) < 1e15) return n.toString();
+  if (Math.abs(n) < 1e-10 && n !== 0) return n.toExponential(8);
+  if (Math.abs(n) >= 1e10) return n.toExponential(8);
+  const s = n.toPrecision(10);
+  return parseFloat(s).toString();
+}
+
+function handleEnter() {
+  if (currentScreen !== 'home') {
+    if (currentScreen === 'yedit') {
+      // If on yedit, clicking enter can go home
+      showHome();
+    }
+    return;
+  }
+  if (!input.trim()) return;
+
+  const expr = input;
+  try {
+    const processed = preprocessExpr(expr);
+    const result = safeEval(processed);
+    ans = result;
+    const display = formatResult(result);
+    addHistory(expr, display);
+    input = '';
+  } catch (e) {
+    addHistory(expr, 'ERR: SYNTAX');
+    input = '';
+  }
+  updateDisplay();
+}
+
+// ===== Y= EDITOR =====
+function showYEdit() {
+  switchScreen('yedit');
+  renderYEdit();
+}
+
+function renderYEdit() {
+  yeditScreen.innerHTML = '<div style="color:#5bc0eb;font-weight:bold;margin-bottom:6px;font-size:14px;">Function Editor</div>';
+  for (let i = 0; i < 7; i++) {
+    const row = document.createElement('div');
+    row.className = 'eq-row';
+    row.innerHTML = `
+      <span class="eq-color" style="background:${eqColors[i]}"></span>
+      <span class="eq-label">Y${i+1}=</span>
+      <span class="eq-value">${equations[i] || '(empty)'}</span>
+    `;
+    row.onclick = () => openEqModal(i);
+    yeditScreen.appendChild(row);
+  }
+}
+
+let editingEqIdx = 0;
+function openEqModal(i) {
+  editingEqIdx = i;
+  document.getElementById('eqModalTitle').textContent = `Edit Y${i+1}`;
+  document.getElementById('eqModalInput').value = equations[i];
+  document.getElementById('eqModal').classList.add('active');
+  setTimeout(() => document.getElementById('eqModalInput').focus(), 100);
+}
+
+function closeEqModal() {
+  document.getElementById('eqModal').classList.remove('active');
+}
+
+function saveEq() {
+  equations[editingEqIdx] = document.getElementById('eqModalInput').value.trim();
+  closeEqModal();
+  renderYEdit();
+}
+
+// ===== GRAPH =====
+function evalGraphExpr(exprStr, xVal) {
+  let e = exprStr;
+  e = e.replace(/π/g, `(${Math.PI})`);
+  e = e.replace(/\bpi\b/g, `(${Math.PI})`);
+  e = e.replace(/\be\b/g, `(${Math.E})`);
+  e = e.replace(/\bx\b/gi, `(${xVal})`);
+  e = e.replace(/\^/g, '**');
+  e = e.replace(/sin\(/g, '__sin(');
+  e = e.replace(/cos\(/g, '__cos(');
+  e = e.replace(/tan\(/g, '__tan(');
+  e = e.replace(/asin\(/g, '__asin(');
+  e = e.replace(/acos\(/g, '__acos(');
+  e = e.replace(/atan\(/g, '__atan(');
+  e = e.replace(/sqrt\(/g, '__sqrt(');
+  e = e.replace(/log\(/g, '__log(');
+  e = e.replace(/ln\(/g, '__ln(');
+  e = e.replace(/abs\(/g, '__abs(');
+  // Implied multiplication
+  e = e.replace(/(\d)(\()/g, '$1*$2');
+  e = e.replace(/(\))(\()/g, '$1*$2');
+
+  const toRad = degreeMode ? (v) => v * Math.PI / 180 : (v) => v;
+  try {
+    const fn = new Function(
+      '__sin','__cos','__tan','__asin','__acos','__atan','__log','__ln','__sqrt','__abs',
+      `"use strict"; return (${e});`
+    );
+    return fn(
+      (v) => Math.sin(toRad(v)),
+      (v) => Math.cos(toRad(v)),
+      (v) => Math.tan(toRad(v)),
+      (v) => Math.asin(v),
+      (v) => Math.acos(v),
+      (v) => Math.atan(v),
+      (v) => Math.log10(v),
+      (v) => Math.log(v),
+      (v) => Math.sqrt(v),
+      (v) => Math.abs(v)
+    );
+  } catch {
+    return NaN;
+  }
+}
+
+function showGraph() {
+  switchScreen('graph');
+  tracing = false;
+  graphBar.style.display = 'none';
+  drawGraph();
+}
+
+function drawGraph() {
+  const w = graphCanvas.width = graphCanvas.offsetWidth * 2;
+  const h = graphCanvas.height = graphCanvas.offsetHeight * 2;
+  ctx.clearRect(0, 0, w, h);
+
+  const { xmin, xmax, ymin, ymax } = graphWindow;
+  const xScale = w / (xmax - xmin);
+  const yScale = h / (ymax - ymin);
+
+  const toCanvasX = (x) => (x - xmin) * xScale;
+  const toCanvasY = (y) => h - (y - ymin) * yScale;
+
+  // Grid
+  ctx.strokeStyle = '#1a2a40';
+  ctx.lineWidth = 1;
+  for (let x = Math.ceil(xmin); x <= xmax; x++) {
+    ctx.beginPath();
+    ctx.moveTo(toCanvasX(x), 0);
+    ctx.lineTo(toCanvasX(x), h);
+    ctx.stroke();
+  }
+  for (let y = Math.ceil(ymin); y <= ymax; y++) {
+    ctx.beginPath();
+    ctx.moveTo(0, toCanvasY(y));
+    ctx.lineTo(w, toCanvasY(y));
+    ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = '#3a5a7a';
+  ctx.lineWidth = 2;
+  // X axis
+  if (ymin <= 0 && ymax >= 0) {
+    ctx.beginPath();
+    ctx.moveTo(0, toCanvasY(0));
+    ctx.lineTo(w, toCanvasY(0));
+    ctx.stroke();
+  }
+  // Y axis
+  if (xmin <= 0 && xmax >= 0) {
+    ctx.beginPath();
+    ctx.moveTo(toCanvasX(0), 0);
+    ctx.lineTo(toCanvasX(0), h);
+    ctx.stroke();
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#4a6a8a';
+  ctx.font = '18px Share Tech Mono';
+  ctx.textAlign = 'center';
+  for (let x = Math.ceil(xmin); x <= xmax; x++) {
+    if (x === 0) continue;
+    const cx = toCanvasX(x);
+    const cy = ymin <= 0 && ymax >= 0 ? toCanvasY(0) + 18 : h - 4;
+    ctx.fillText(x, cx, cy);
+  }
+  ctx.textAlign = 'right';
+  for (let y = Math.ceil(ymin); y <= ymax; y++) {
+    if (y === 0) continue;
+    const cx = xmin <= 0 && xmax >= 0 ? toCanvasX(0) - 6 : 30;
+    ctx.fillText(y, cx, toCanvasY(y) + 5);
+  }
+
+  // Plot equations
+  const steps = w;
+  for (let ei = 0; ei < equations.length; ei++) {
+    if (!equations[ei]) continue;
+    ctx.strokeStyle = eqColors[ei];
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    let penDown = false;
+    let prevY = null;
+
+    for (let s = 0; s <= steps; s++) {
+      const x = xmin + (s / steps) * (xmax - xmin);
+      const y = evalGraphExpr(equations[ei], x);
+
+      if (isNaN(y) || !isFinite(y) || y < ymin - 50 || y > ymax + 50) {
+        // Discontinuity detection
+        if (penDown) {
+          ctx.stroke();
+          ctx.beginPath();
+          penDown = false;
+        }
+        prevY = null;
+        continue;
+      }
+
+      // Detect large jumps (for tan, 1/x, etc.)
+      if (prevY !== null && Math.abs(y - prevY) > (ymax - ymin) * 2) {
+        ctx.stroke();
+        ctx.beginPath();
+        penDown = false;
+      }
+
+      const cx = toCanvasX(x);
+      const cy = toCanvasY(y);
+
+      if (!penDown) {
+        ctx.moveTo(cx, cy);
+        penDown = true;
+      } else {
+        ctx.lineTo(cx, cy);
+      }
+      prevY = y;
+    }
+    if (penDown) ctx.stroke();
+  }
+
+  // Trace cursor
+  if (tracing && equations[traceEqIdx]) {
+    const ty = evalGraphExpr(equations[traceEqIdx], traceX);
+    if (isFinite(ty)) {
+      const cx = toCanvasX(traceX);
+      const cy = toCanvasY(ty);
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fillStyle = eqColors[traceEqIdx];
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Crosshairs
+      ctx.setLineDash([6,4]);
+      ctx.strokeStyle = 'rgba(91,192,235,0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx, 0); ctx.lineTo(cx, h);
+      ctx.moveTo(0, cy); ctx.lineTo(w, cy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      document.getElementById('traceX').textContent = traceX.toFixed(4);
+      document.getElementById('traceY').textContent = ty.toFixed(4);
+    }
+    graphBar.style.display = 'flex';
+  }
+}
+
+function toggleTrace() {
+  if (currentScreen !== 'graph') showGraph();
+  tracing = !tracing;
+  traceX = 0;
+  traceEqIdx = equations.findIndex(e => e);
+  if (traceEqIdx < 0) traceEqIdx = 0;
+  if (!tracing) graphBar.style.display = 'none';
+  drawGraph();
+}
+
+function zoomStd() {
+  graphWindow = { xmin: -10, xmax: 10, ymin: -10, ymax: 10 };
+  if (currentScreen === 'graph') drawGraph();
+}
+
+function showWindow() {
+  const newXmin = prompt('Xmin:', graphWindow.xmin);
+  if (newXmin === null) return;
+  const newXmax = prompt('Xmax:', graphWindow.xmax);
+  if (newXmax === null) return;
+  const newYmin = prompt('Ymin:', graphWindow.ymin);
+  if (newYmin === null) return;
+  const newYmax = prompt('Ymax:', graphWindow.ymax);
+  if (newYmax === null) return;
+  graphWindow.xmin = parseFloat(newXmin) || -10;
+  graphWindow.xmax = parseFloat(newXmax) || 10;
+  graphWindow.ymin = parseFloat(newYmin) || -10;
+  graphWindow.ymax = parseFloat(newYmax) || 10;
+  if (currentScreen === 'graph') drawGraph();
+}
+
+// ===== TABLE =====
+function showTable() {
+  switchScreen('table');
+  let html = '<table><thead><tr><th>X</th>';
+  const activeEqs = [];
+  for (let i = 0; i < equations.length; i++) {
+    if (equations[i]) {
+      html += `<th style="color:${eqColors[i]}">Y${i+1}</th>`;
+      activeEqs.push(i);
+    }
+  }
+  html += '</tr></thead><tbody>';
+
+  if (activeEqs.length === 0) {
+    html += '<tr><td colspan="2" style="color:#6a8aaa;text-align:center;padding:20px;">No equations defined.<br>Use Y= to add functions.</td></tr>';
+  } else {
+    for (let x = graphWindow.xmin; x <= graphWindow.xmax; x += (graphWindow.xmax - graphWindow.xmin) / 20) {
+      const xr = Math.round(x * 1000) / 1000;
+      html += `<tr><td>${xr}</td>`;
+      for (const ei of activeEqs) {
+        const y = evalGraphExpr(equations[ei], xr);
+        html += `<td>${isFinite(y) ? (Math.round(y * 10000) / 10000) : 'ERR'}</td>`;
+      }
+      html += '</tr>';
+    }
+  }
+  html += '</tbody></table>';
+  tableScreen.innerHTML = html;
+}
+
+// ===== KEYBOARD SUPPORT =====
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('eqModal').classList.contains('active')) return;
+
+  const key = e.key;
+  if (key >= '0' && key <= '9') { handleKey(key); return; }
+  if (key === '.') { handleKey('.'); return; }
+  if (key === '+') { handleKey('+'); return; }
+  if (key === '-') { handleKey('-'); return; }
+  if (key === '*') { handleKey('×'); return; }
+  if (key === '/') { e.preventDefault(); handleKey('÷'); return; }
+  if (key === '(') { handleKey('('); return; }
+  if (key === ')') { handleKey(')'); return; }
+  if (key === '^') { handleFunc('^'); return; }
+  if (key === ',') { handleKey(','); return; }
+  if (key === 'Enter') { handleEnter(); return; }
+  if (key === 'Backspace') { handleDel(); return; }
+  if (key === 'Escape') { handleClear(); return; }
+  if (key === 'ArrowLeft') { handleArrow('left'); return; }
+  if (key === 'ArrowRight') { handleArrow('right'); return; }
+  if (key === 'ArrowUp') { handleArrow('up'); return; }
+  if (key === 'ArrowDown') { handleArrow('down'); return; }
+});
+
+// Handle Enter in modal
+document.getElementById('eqModalInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') saveEq();
+  if (e.key === 'Escape') closeEqModal();
+});
+
+// Init
+updateDisplay();
+</script>
+</body>
+</html>
