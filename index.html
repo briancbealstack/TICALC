@@ -12,25 +12,40 @@
             color: white;
             text-align: center;
         }
+
         h1 {
             padding: 20px;
         }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 10px;
-            padding: 10px;
+            gap: 12px;
+            padding: 12px;
         }
+
         .video-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
+            background: #111;
+            border-radius: 8px;
+            overflow: hidden;
         }
+
         .video-container iframe {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
+        }
+
+        footer {
+            padding: 16px;
+            font-size: 14px;
+            color: #aaa;
         }
     </style>
 </head>
@@ -43,47 +58,43 @@
     <!-- Vilano Boat Ramp -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/live_stream?channel=UCrfP0huUzzTQ4c9q29n3gfQ&autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube-nocookie.com/embed/S8afSTXKkdw?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
-        <p>Vilano Boat Ramp LIVE</p>
     </div>
 
-    <!-- Bridge of Lions / Matanzas Bay -->
+    <!-- Bridge of Lions -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/live_stream?channel=UCrfP0huUzzTQ4c9q29n3gfQ&autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube-nocookie.com/embed/0lox0s8zNcU?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
-        <p>Bridge of Lions & Matanzas Bay</p>
     </div>
 
-    <!-- St. Augustine Beach Pier (SurfStation) -->
+    <!-- St. Augustine Beach Pier (Surf Station) -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/live_stream?channel=@SurfStationCam&autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube-nocookie.com/embed/m9Y8v4Y8dXk?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
-        <p>St. Augustine Beach Pier (SurfStationCam)</p>
     </div>
 
-    <!-- Alternate Beach/Pier Cam -->
+    <!-- St. Augustine Lighthouse -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/EOzOqNGalV0?autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube-nocookie.com/embed/k6Y6mZJrK9A?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
-        <p>Beach / Pier Live View</p>
     </div>
 
 </div>
 
-<footer style="padding: 12px; font-size: 14px;">
-    Tap any video to unmute. Streams are sourced from YouTube live public webcams.
+<footer>
+Tap any video to unmute. Streams are embedded from public live webcams.
 </footer>
 
 </body>
