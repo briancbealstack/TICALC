@@ -14,7 +14,23 @@
         }
 
         h1 {
-            padding: 20px;
+            padding: 20px 20px 8px;
+            margin: 0;
+        }
+
+        .refresh-btn {
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        .refresh-btn:hover {
+            background: #e60000;
         }
 
         .grid {
@@ -53,12 +69,14 @@
 
 <h1>📍 St. Augustine Live Cameras</h1>
 
+<button class="refresh-btn" onclick="refreshStreams()">🔄 Refresh Streams</button>
+
 <div class="grid">
 
     <!-- Cam 1 -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/S8afSTXKkdw?autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube.com/embed/S8afSTXKkdw?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
@@ -67,25 +85,25 @@
     <!-- Cam 2 -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/0lox0s8zNcU?autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube.com/embed/0lox0s8zNcU?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
     </div>
 
-    <!-- Cam 3 (UPDATED) -->
+    <!-- Cam 3 -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/ZksWoEAhmTU?autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube.com/embed/ZksWoEAhmTU?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
     </div>
 
-    <!-- Cam 4 (UPDATED) -->
+    <!-- Cam 4 -->
     <div class="video-container">
         <iframe
-            src="https://www.youtube-nocookie.com/embed/Q6eZVkUKFxo?autoplay=1&mute=1&playsinline=1"
+            src="https://www.youtube.com/embed/Q6eZVkUKFxo?autoplay=1&mute=1&playsinline=1"
             allow="autoplay; encrypted-media; picture-in-picture"
             allowfullscreen>
         </iframe>
@@ -94,8 +112,19 @@
 </div>
 
 <footer>
-Tap any video to unmute. Streams embedded from YouTube Live.
+    Tap any video to unmute. Streams embedded from YouTube Live.
 </footer>
+
+<script>
+    function refreshStreams() {
+        const iframes = document.querySelectorAll('.video-container iframe');
+        iframes.forEach(iframe => {
+            const src = iframe.src;
+            iframe.src = '';
+            setTimeout(() => { iframe.src = src; }, 100);
+        });
+    }
+</script>
 
 </body>
 </html>
