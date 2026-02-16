@@ -1,129 +1,221 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>St Augustine Live Cams</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #000;
-            color: white;
-            text-align: center;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        h1 {
-            padding: 20px 20px 8px;
-            margin: 0;
-        }
+```
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        background-color: #0f0f0f;
+        color: white;
+        text-align: center;
+        min-height: 100vh;
+    }
 
-        .refresh-btn {
-            background: #cc0000;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 8px;
-        }
+    h1 {
+        padding: 24px 16px 8px;
+        font-size: 22px;
+    }
 
-        .refresh-btn:hover {
-            background: #e60000;
-        }
+    .subtitle {
+        color: #aaa;
+        font-size: 13px;
+        padding: 0 16px 12px;
+    }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 12px;
-            padding: 12px;
-        }
+    .refresh-btn {
+        background: #cc0000;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 20px;
+        cursor: pointer;
+        margin-bottom: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
 
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            background: #111;
-            border-radius: 8px;
-            overflow: hidden;
-        }
+    .refresh-btn:active {
+        background: #a00;
+        transform: scale(0.97);
+    }
 
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 12px;
+        padding: 0 12px 12px;
+    }
 
-        footer {
-            padding: 16px;
-            font-size: 14px;
-            color: #aaa;
-        }
-    </style>
+    .cam-card {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #1a1a1a;
+        aspect-ratio: 16/9;
+        cursor: pointer;
+    }
+
+    .cam-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .cam-card img.error { opacity: 0; }
+
+    .play-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.3);
+    }
+
+    .cam-card:active .play-overlay {
+        background: rgba(0,0,0,0.5);
+    }
+
+    .play-btn {
+        width: 68px;
+        height: 48px;
+        background: rgba(204, 0, 0, 0.9);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .play-btn svg {
+        width: 26px;
+        height: 26px;
+        fill: white;
+        margin-left: 3px;
+    }
+
+    .cam-label {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 24px 12px 10px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        font-size: 14px;
+        font-weight: 600;
+        text-align: left;
+        pointer-events: none;
+    }
+
+    .live-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #f00;
+        border-radius: 50%;
+        margin-right: 6px;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+
+    /* Active iframe state */
+    .cam-card.playing {
+        cursor: default;
+    }
+
+    .cam-card.playing iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    footer {
+        padding: 20px 16px;
+        font-size: 13px;
+        color: #666;
+    }
+</style>
+```
+
 </head>
 <body>
 
 <h1>📍 St. Augustine Live Cameras</h1>
+<p class="subtitle">Tap a camera to start the stream</p>
 
-<button class="refresh-btn" onclick="refreshStreams()">🔄 Refresh Streams</button>
+<button class="refresh-btn" onclick="resetAll()">🔄 Refresh All</button>
 
-<div class="grid">
-
-    <!-- Cam 1 -->
-    <div class="video-container">
-        <iframe
-            src="https://www.youtube.com/embed/S8afSTXKkdw?autoplay=1&mute=1&playsinline=1"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-    </div>
-
-    <!-- Cam 2 -->
-    <div class="video-container">
-        <iframe
-            src="https://www.youtube.com/embed/0lox0s8zNcU?autoplay=1&mute=1&playsinline=1"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-    </div>
-
-    <!-- Cam 3 -->
-    <div class="video-container">
-        <iframe
-            src="https://www.youtube.com/embed/ZksWoEAhmTU?autoplay=1&mute=1&playsinline=1"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-    </div>
-
-    <!-- Cam 4 -->
-    <div class="video-container">
-        <iframe
-            src="https://www.youtube.com/embed/Q6eZVkUKFxo?autoplay=1&mute=1&playsinline=1"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-    </div>
-
-</div>
+<div class="grid" id="camGrid"></div>
 
 <footer>
-    Tap any video to unmute. Streams embedded from YouTube Live.
+    Tap a thumbnail to load the live stream inline.
 </footer>
 
 <script>
-    function refreshStreams() {
-        const iframes = document.querySelectorAll('.video-container iframe');
-        iframes.forEach(iframe => {
-            const src = iframe.src;
-            iframe.src = '';
-            setTimeout(() => { iframe.src = src; }, 100);
+    const cams = [
+        { id: 'S8afSTXKkdw', label: 'St. Augustine — Cam 1' },
+        { id: '0lox0s8zNcU', label: 'St. Augustine — Cam 2' },
+        { id: 'ZksWoEAhmTU', label: 'St. Augustine — Cam 3' },
+        { id: 'Q6eZVkUKFxo', label: 'St. Augustine — Cam 4' },
+    ];
+
+    function buildGrid() {
+        const grid = document.getElementById('camGrid');
+        grid.innerHTML = '';
+        const bust = Date.now();
+
+        cams.forEach((cam, i) => {
+            const card = document.createElement('div');
+            card.className = 'cam-card';
+            card.id = `cam-${i}`;
+            card.innerHTML = `
+                <img src="https://img.youtube.com/vi/${cam.id}/hqdefault.jpg?t=${bust}"
+                     alt="${cam.label}"
+                     onerror="this.classList.add('error')">
+                <div class="play-overlay">
+                    <div class="play-btn">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                </div>
+                <div class="cam-label"><span class="live-dot"></span>${cam.label}</div>
+            `;
+            card.addEventListener('click', () => loadStream(i));
+            grid.appendChild(card);
         });
     }
+
+    function loadStream(index) {
+        const card = document.getElementById(`cam-${index}`);
+        if (card.classList.contains('playing')) return;
+
+        const cam = cams[index];
+        card.classList.add('playing');
+        card.innerHTML = `<iframe
+            src="https://www.youtube.com/embed/${cam.id}?autoplay=1&mute=1&playsinline=1"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen></iframe>`;
+    }
+
+    function resetAll() {
+        buildGrid();
+    }
+
+    buildGrid();
 </script>
 
 </body>
